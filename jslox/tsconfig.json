@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "module": "es6",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "allowJs": true,
+    "lib": ["esnext", "DOM"]
+  },
+  "include": ["src/**/*"]
+}
