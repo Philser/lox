@@ -1,6 +1,6 @@
-import { Lox } from './main';
-import { Token } from './token';
-import { TokenType } from './tokenType';
+import { Lox } from './main.js';
+import { Token } from './token.js';
+import { TokenType } from './tokenType.js';
 
 export class Scanner {
   private source: string;
@@ -8,6 +8,25 @@ export class Scanner {
   private start = 0;
   private current = 0;
   private line = 1;
+
+  private keywords = {
+    and: TokenType.AND,
+    class: TokenType.CLASS,
+    else: TokenType.ELSE,
+    false: TokenType.FALSE,
+    for: TokenType.FOR,
+    fun: TokenType.FUN,
+    if: TokenType.IF,
+    nil: TokenType.NIL,
+    or: TokenType.OR,
+    print: TokenType.PRINT,
+    return: TokenType.RETURN,
+    super: TokenType.SUPER,
+    this: TokenType.THIS,
+    true: TokenType.TRUE,
+    var: TokenType.VAR,
+    while: TokenType.WHILE,
+  };
 
   constructor(source: string) {
     this.source = source;
@@ -103,6 +122,8 @@ export class Scanner {
       default:
         if (this.isDigit(c)) {
           this.parseNumber();
+        } else if (this.isAlpha(c)) {
+          this.parseIdentifier();
         } else {
           Lox.error(this.line, 'Unexpected character.');
         }
@@ -173,6 +194,27 @@ export class Scanner {
 
   private isDigit(c: string): boolean {
     return c >= '0' && c <= '9';
+  }
+
+  private isAlpha(c: string): boolean {
+    return (c >= 'A' && c <= 'z') || c == '_';
+  }
+
+  private isAlphaNumeric(c: string): boolean {
+    return this.isAlpha(c) || this.isDigit(c);
+  }
+
+  private parseIdentifier() {
+    while (this.isAlphaNumeric(this.peek())) {
+      this.advance();
+    }
+
+    const text = this.source.substring(this.start, this.current);
+    let type: TokenType = this.keywords[text];
+    if (type == null) {
+      type = TokenType.IDENTIFIER;
+    }
+    this.addToken(type);
   }
 
   private parseNumber() {

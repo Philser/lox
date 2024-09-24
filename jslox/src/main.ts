@@ -1,6 +1,6 @@
 import fs from 'fs';
-import readline from 'readline';
-import { Scanner } from './scanner';
+import readline from 'readline/promises';
+import { Scanner } from './scanner.js';
 
 export class Lox {
   // TODO: We could also jsut make run() return an optional error object
@@ -14,7 +14,9 @@ export class Lox {
     } else if (args.length == 3) {
       Lox.runFile(args[2]);
     } else {
-      Lox.runPrompt();
+      Lox.runPrompt()
+        .then(() => process.exit(0))
+        .catch(() => process.exit(1));
     }
   }
 
@@ -27,20 +29,21 @@ export class Lox {
     }
   }
 
-  static runPrompt() {
+  static async runPrompt() {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
     });
 
-    rl.question(`>`, (line) => {
+    while (true) {
+      const line = await rl.question('> ');
       if (line === null) {
         rl.close();
-        return;
+        process.exit(0);
       }
       run(line);
       Lox.hadError = false;
-    });
+    }
   }
 
   static error(line: number, message: string) {

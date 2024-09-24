@@ -11,5 +11,5 @@
     "allowJs": true,
     "lib": ["esnext", "DOM"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "tools/**/*"]
 }
