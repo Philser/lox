@@ -125,7 +125,7 @@ export class Scanner {
         } else if (this.isAlpha(c)) {
           this.parseIdentifier();
         } else {
-          Lox.error(this.line, 'Unexpected character.');
+          Lox.error('Unexpected character.', this.line);
         }
         break;
     }
@@ -180,7 +180,7 @@ export class Scanner {
     }
 
     if (this.isAtEnd()) {
-      Lox.error(this.line, 'Unterminated string.');
+      Lox.error('Unterminated string.', this.line);
       return;
     }
 

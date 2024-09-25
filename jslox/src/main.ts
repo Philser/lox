@@ -1,6 +1,8 @@
 import fs from 'fs';
 import readline from 'readline/promises';
 import { Scanner } from './scanner.js';
+import { Token } from './token.js';
+import { TokenType } from './tokenType.js';
 
 export class Lox {
   // TODO: We could also jsut make run() return an optional error object
@@ -46,8 +48,18 @@ export class Lox {
     }
   }
 
-  static error(line: number, message: string) {
-    Lox.report(line, '', message);
+  static error(message: string, line: number): void;
+  static error(message: string, token: Token): void;
+  static error(message: string, lineOrToken: number | Token) {
+    if (typeof lineOrToken === 'number') {
+      return Lox.report(lineOrToken, '', message);
+    }
+
+    if (lineOrToken.type === TokenType.EOF) {
+      Lox.report(lineOrToken.line, ' at end', message);
+    } else {
+      Lox.report(lineOrToken.line, ' at "' + lineOrToken.lexeme + '"', message);
+    }
   }
 
   static report(line: number, where: string, message: string) {

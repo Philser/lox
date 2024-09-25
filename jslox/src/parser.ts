@@ -1,6 +1,9 @@
 import { Binary, Expr, Grouping, Literal, Unary } from './expr';
+import { Lox } from './main';
 import { Token } from './token';
 import { TokenType } from './tokenType';
+
+export class ParseError extends Error {}
 
 /**
  *
@@ -158,6 +161,11 @@ export class Parser {
       return this.advance();
     }
 
-    throw error(this.peek(), message);
+    throw this.error(this.peek(), message);
+  }
+
+  private error(token: Token, message: string): ParseError {
+    Lox.error(message, token);
+    return new ParseError();
   }
 }
