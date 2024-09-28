@@ -1,7 +1,7 @@
-import { Binary, Expr, Grouping, Literal, Unary } from './expr';
-import { Lox } from './main';
-import { Token } from './token';
-import { TokenType } from './tokenType';
+import { Binary, Expr, Grouping, Literal, Unary } from './expr.js';
+import { Lox } from './main.js';
+import { Token } from './token.js';
+import { TokenType } from './tokenType.js';
 
 export class ParseError extends Error {}
 
@@ -24,6 +24,14 @@ export class Parser {
 
   constructor(tokens: Token[]) {
     this.tokens = tokens;
+  }
+
+  public parse(): Expr | null {
+    try {
+      return this.expression();
+    } catch (e) {
+      return null;
+    }
   }
 
   private expression(): Expr {
@@ -115,6 +123,8 @@ export class Parser {
       this.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
       return new Grouping(expr);
     }
+
+    throw this.error(this.peek(), 'Expected expression.');
   }
 
   private matchCurr(types: TokenType[]) {
@@ -168,4 +178,27 @@ export class Parser {
     Lox.error(message, token);
     return new ParseError();
   }
+
+  // Uncomment once we have statements
+  // private synchronize() {
+  //   this.advance();
+
+  //   while (!this.isAtEnd()) {
+  //     if (this.previous().type == SEMICOLON) return;
+
+  //     switch (peek().type) {
+  //       case CLASS:
+  //       case FUN:
+  //       case VAR:
+  //       case FOR:
+  //       case IF:
+  //       case WHILE:
+  //       case PRINT:
+  //       case RETURN:
+  //         return;
+  //     }
+
+  //     this.advance();
+  //   }
+  // }
 }

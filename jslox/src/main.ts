@@ -1,5 +1,8 @@
 import fs from 'fs';
 import readline from 'readline/promises';
+import { AstPrinter } from './astPrinter.js';
+import { Expr } from './expr.js';
+import { Parser } from './parser.js';
 import { Scanner } from './scanner.js';
 import { Token } from './token.js';
 import { TokenType } from './tokenType.js';
@@ -72,9 +75,13 @@ function run(source: string) {
   const scanner = new Scanner(source);
   const tokens = scanner.scanTokens();
 
-  for (const token of tokens) {
-    console.log(token);
-  }
+  const parser: Parser = new Parser(tokens);
+  const expression: Expr = parser.parse();
+
+  // Stop if there was a syntax error.
+  if (Lox.hadError) return;
+
+  console.log(new AstPrinter().print(expression));
 }
 
 Lox.main();
