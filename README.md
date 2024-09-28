@@ -1,3 +1,3 @@
 ## WIP State
 
-- Stopped at: https://www.craftinginterpreters.com/parsing-expressions.html#syntax-errors
+- Stopped at: https://www.craftinginterpreters.com/evaluating-expressions.html#runtime-errors
