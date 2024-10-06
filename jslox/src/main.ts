@@ -1,7 +1,7 @@
 import fs from 'fs';
 import readline from 'readline/promises';
-import { AstPrinter } from './astPrinter.js';
 import { Expr } from './expr.js';
+import { Interpreter, RuntimeError } from './interpreter.js';
 import { Parser } from './parser.js';
 import { Scanner } from './scanner.js';
 import { Token } from './token.js';
@@ -10,6 +10,14 @@ import { TokenType } from './tokenType.js';
 export class Lox {
   // TODO: We could also jsut make run() return an optional error object
   static hadError = false;
+  static hadRuntimeError = false;
+
+  static runtimeError(e: RuntimeError) {
+    console.log(
+      `Error at Line ${e.token.line}: '${e.token.toString()}' ${e.message}`
+    );
+    this.hadRuntimeError = true;
+  }
 
   public static main() {
     const args = process.argv;
@@ -31,6 +39,10 @@ export class Lox {
 
     if (Lox.hadError) {
       process.exit(65);
+    }
+
+    if (Lox.hadRuntimeError) {
+      process.exit(70);
     }
   }
 
@@ -81,7 +93,8 @@ function run(source: string) {
   // Stop if there was a syntax error.
   if (Lox.hadError) return;
 
-  console.log(new AstPrinter().print(expression));
+  new Interpreter().interpret(expression);
+  // console.log(new AstPrinter().print(expression));
 }
 
 Lox.main();
