@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "run": "tsc && node ./dist/src/main.js",
+    "generateAst": "tsc && node ./dist/tools/astGenerator",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,7 +12,7 @@
   "description": "",
   "type": "module",
   "devDependencies": {
-    "@types/node": "^22.5.5"
+    "@types/node": "^22.7.8"
   },
   "dependencies": {
     "typescript": "^5.6.2"

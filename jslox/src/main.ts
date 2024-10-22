@@ -1,9 +1,9 @@
 import fs from 'fs';
 import readline from 'readline/promises';
-import { Expr } from './expr.js';
 import { Interpreter, RuntimeError } from './interpreter.js';
 import { Parser } from './parser.js';
 import { Scanner } from './scanner.js';
+import { Stmt } from './stmt.js';
 import { Token } from './token.js';
 import { TokenType } from './tokenType.js';
 
@@ -88,13 +88,12 @@ function run(source: string) {
   const tokens = scanner.scanTokens();
 
   const parser: Parser = new Parser(tokens);
-  const expression: Expr = parser.parse();
+  const statements: Stmt[] = parser.parse();
 
   // Stop if there was a syntax error.
   if (Lox.hadError) return;
 
-  new Interpreter().interpret(expression);
-  // console.log(new AstPrinter().print(expression));
+  new Interpreter().interpret(statements);
 }
 
 Lox.main();

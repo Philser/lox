@@ -1,5 +1,14 @@
-import { Binary, Expr, Grouping, Literal, Unary, Visitor } from './expr.js';
+import {
+  Binary,
+  Expr,
+  ExprVisitor,
+  Grouping,
+  Literal,
+  Unary,
+  Variable,
+} from './expr.js';
 import { Lox } from './main.js';
+import { Expression, Print, Stmt, StmtVisitor, Var } from './stmt.js';
 import { Token } from './token.js';
 import { TokenType } from './tokenType.js';
 
@@ -14,11 +23,12 @@ export class RuntimeError extends Error {
   }
 }
 
-export class Interpreter implements Visitor<Object> {
-  interpret(expr: Expr) {
+export class Interpreter implements ExprVisitor<Object>, StmtVisitor<void> {
+  interpret(stmts: Stmt[]) {
     try {
-      const val = this.evaluate(expr);
-      console.log(this.stringifyValue(val));
+      for (const stmt of stmts) {
+        this.execute(stmt);
+      }
     } catch (e) {
       if (e! instanceof RuntimeError) {
         throw e;
@@ -99,6 +109,27 @@ export class Interpreter implements Visitor<Object> {
 
     // Unreachable.
     return null;
+  }
+
+  visitVariableExpr(expr: Variable): Object {
+    throw new Error('Method not implemented.');
+  }
+
+  visitExpressionStmt(stmt: Expression): void {
+    this.evaluate(stmt.expression);
+  }
+
+  visitPrintStmt(stmt: Print): void {
+    const value = this.evaluate(stmt.expression);
+    console.log(this.stringifyValue(value));
+  }
+
+  visitVarStmt(stmt: Var): void {
+    throw new Error('Method not implemented.');
+  }
+
+  private execute(stmt: Stmt) {
+    stmt.accept(this);
   }
 
   private evaluate(expr: Expr): Object {

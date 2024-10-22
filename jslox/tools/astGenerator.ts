@@ -7,6 +7,13 @@ function run() {
     'Grouping = expression: Expr',
     'Literal  = value: Object',
     'Unary    = operator: Token, right: Expr',
+    'Variable = name: Token',
+  ]);
+
+  defineAst(outputDir, 'Stmt', [
+    'Expression = expression: Expr',
+    'Print      = expression: Expr',
+    'Var        = name: Token, initializer: Expr',
   ]);
 }
 
@@ -17,7 +24,7 @@ function defineAst(outputDir: string, baseName: string, types: string[]) {
   writer.write("import { Token } from './token';\n\n");
   writer.write('export abstract class ' + baseName + ' {\n');
   // The base accept() method.
-  writer.write('\tabstract accept<R>(visitor: Visitor<R>): R;\n');
+  writer.write(`\tabstract accept<R>(visitor: ${baseName}Visitor<R>): R;\n`);
   writer.write('}\n\n');
 
   defineVisitor(writer, baseName, types);

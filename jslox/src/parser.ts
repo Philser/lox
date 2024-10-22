@@ -1,11 +1,21 @@
 import { Binary, Expr, Grouping, Literal, Unary } from './expr.js';
 import { Lox } from './main.js';
+import { Expression, Print, Stmt } from './stmt.js';
 import { Token } from './token.js';
 import { TokenType } from './tokenType.js';
 
 export class ParseError extends Error {}
 
 /**
+ *
+ * program        → declaration* EOF ;
+ * declaration    → varDecl
+                   | statement ;
+ * varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+ * statement      → exprStmt
+ *                 | printStmt ;
+ * exprStmt       → expression ";" ;
+ * printStmt      → "print" expression ";" ;
  *
  * expression     → equality ;
  * equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -15,7 +25,8 @@ export class ParseError extends Error {}
  * unary          → ( "!" | "-" ) unary
  *                  | primary ;
  * primary        → NUMBER | STRING | "true" | "false" | "nil"
- *                  | "(" expression ")" ;
+ *                  | "(" expression ")" 
+ *                  | IDENTIFIER ;
  */
 
 export class Parser {
@@ -26,12 +37,36 @@ export class Parser {
     this.tokens = tokens;
   }
 
-  public parse(): Expr | null {
-    try {
-      return this.expression();
-    } catch (e) {
-      return null;
+  public parse(): Stmt[] {
+    const statements: Stmt[] = [];
+    while (!this.isAtEnd()) {
+      statements.push(this.statement());
     }
+
+    return statements;
+  }
+
+  private statement(): Stmt {
+    if (this.matchCurr([TokenType.PRINT])) {
+      return this.printStatement();
+    }
+
+    return this.expressionStatement();
+  }
+
+  private printStatement(): Print {
+    const value: Expr = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
+
+    return new Print(value);
+  }
+
+  private expressionStatement(): Expression {
+    const value: Expr = this.expression();
+
+    this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
+
+    return new Expression(value);
   }
 
   private expression(): Expr {
